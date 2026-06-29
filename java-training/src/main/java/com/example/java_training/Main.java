@@ -23,7 +23,7 @@ public class Main {
     enum daysOfWeek { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday }
 
     // Normal switch
-    private static void normalSwitch(int num) {
+    private static void normalSwitchDayOfWeek(int num) {
         switch (num) {
             case 1:
                 System.out.println(daysOfWeek.Monday);
@@ -52,7 +52,7 @@ public class Main {
     }
 
     // Shorthand switch
-    private static void shorthandSwitch(int num) {
+    private static void shorthandSwitchDayOfWeek(int num) {
         switch (num) {
             case 1 -> System.out.println(daysOfWeek.Monday);
             case 2 -> System.out.println(daysOfWeek.Tuesday);
@@ -68,7 +68,7 @@ public class Main {
     /* Loop Assignment */
 
     // For loop
-    private static void forLoop(int input) {
+    private static void forLoopPyramid(int input) {
         for (int row = 1; row <= input; row++) {
             for (int i = 1; i <= row; i++) {
                 System.out.print(i + " ");
@@ -78,7 +78,7 @@ public class Main {
     }
 
     // While loop
-    private static void whileLoop(int input) {
+    private static void whileLoopPyramid(int input) {
         int row = 1;
 
         while (row <= input) {
@@ -95,7 +95,7 @@ public class Main {
     }
 
     // Do-while loop
-    private static void doWhileLoop(int input) {
+    private static void doWhileLoopPyramid(int input) {
         int row = 1;
 
         do {
@@ -134,10 +134,10 @@ public class Main {
         int num = scanner.nextInt();
 
         System.out.println("\nNormal Switch:");
-        normalSwitch(num);
+        normalSwitchDayOfWeek(num);
 
         System.out.println("\nShorthand Switch:");
-        shorthandSwitch(num);
+        shorthandSwitchDayOfWeek(num);
 
         System.out.println();
 
@@ -154,13 +154,13 @@ public class Main {
         }
 
         System.out.println("\nFor Loop:");
-        forLoop(input);
+        forLoopPyramid(input);
 
         System.out.println("\nWhile Loop:");
-        whileLoop(input);
+        whileLoopPyramid(input);
 
         System.out.println("\nDo-While Loop:");
-        doWhileLoop(input);
+        doWhileLoopPyramid(input);
 
         scanner.close();
     }
