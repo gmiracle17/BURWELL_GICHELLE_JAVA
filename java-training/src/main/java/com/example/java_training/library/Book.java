@@ -21,21 +21,21 @@ public class Book {
 	
 	public Boolean borrowBook() {
 		if (!available) {
-			System.out.println("Book is already borrowed. Sorry!\n");
+			System.out.println(title + " is already borrowed. Sorry!\n");
 		}
 		else {
-			System.out.println(this.title + " is successfully borrowed. Enjoy!\n");
+			System.out.println(title + " is successfully borrowed. Enjoy!\n");
 		}
 		return this.available = false;
 	}
 	
 	public Boolean returnBook() {
-		System.out.println(this.title + " is successfully returned. Thank you!\n");
+		System.out.println(title + " is successfully returned. Thank you!\n");
 		return this.available = true;
 	}
 	
 	public void getInfo() {
-		System.out.println(this.title + " by " + this.author + " (Available : " + this.available + ")");
+		System.out.println(title + " by " + author + " (Available : " + available + ")");
 	}
 
 	public String getTitle() {
