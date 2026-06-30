@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Library {
 	ArrayList<Book> library = new ArrayList<>();
-	
+	Boolean bookFound = false;
 	
 	void addBook (Book b) {
 		library.add(b);
@@ -21,15 +21,26 @@ public class Library {
 		for (Book book: library) {
 			if (title == book.getTitle()) {
 				book.borrowBook();
+				bookFound = true;
 			}
 		}
+		if (!bookFound) {
+			System.out.println(title + " is not found.");
+		}
+		bookFound = false; // return to default
 	}
 	
 	void returnBook(String title) {
 		for (Book book: library) {
 			if (title == book.getTitle()) {
 				book.returnBook();
+				bookFound = true;
 			}
 		}
+		if (!bookFound) {
+			System.out.println(title + " is not found.");
+		}
+		
+		bookFound = false; // return to default
 	}
 }
