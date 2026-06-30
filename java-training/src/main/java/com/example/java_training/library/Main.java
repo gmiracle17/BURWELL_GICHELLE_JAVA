@@ -18,6 +18,7 @@ public class Main {
 		library.borrowBook("Janelle");
 		
 		library.borrowBook("Harry Potter");
+		library.borrowBook("Harry Potter");
 		System.out.println("\n---After borrowing Harry Potter---");
 		library.showAllBooks();
 		

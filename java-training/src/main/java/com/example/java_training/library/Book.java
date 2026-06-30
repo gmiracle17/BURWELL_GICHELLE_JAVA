@@ -20,10 +20,12 @@ public class Book {
 	}
 	
 	public Boolean borrowBook() {
-		if (!this.available) {
+		if (!available) {
 			System.out.println("Book is already borrowed. Sorry!\n");
 		}
-		System.out.println(this.title + " is successfully borrowed. Enjoy!\n");
+		else {
+			System.out.println(this.title + " is successfully borrowed. Enjoy!\n");
+		}
 		return this.available = false;
 	}
 	
@@ -38,9 +40,5 @@ public class Book {
 
 	public String getTitle() {
 		return this.title;
-	}
-	
-	public String getAuthor() { 
-		return this.author;
 	}
 }
