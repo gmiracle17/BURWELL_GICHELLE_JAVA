@@ -1,23 +1,41 @@
 package com.example.java_training.day2_payment_processing_system;
-
 import java.math.BigDecimal;
 
-public abstract sealed class PaymentProcessor implements PaymentMethod permits ElectronicPayment, BankTransfer{
-	// Encapsulation: Hidden private variable
-	private final BigDecimal amount;
-	
-	protected PaymentProcessor(BigDecimal amount) { 
-		this.amount = amount; 
-	}
-	
-	public void showPaymentAmount() {
-		System.out.println("PHP " + amount + " paid.");
-	}
-	
-	public BigDecimal getAmount() {
-		return amount;
-	}
-	
-	public abstract void processPayment();
-
+/**
+ * PaymentProcessor Class
+ * - abstract class that implements PaymentMethod
+ * - shows abstraction since objects cannot directly instantiate this class
+ * - shows encapsulation through private fields
+ */
+public abstract sealed class PaymentProcessor implements PaymentMethod permits ElectronicPayment, BankTransfer {
+    
+    private final BigDecimal amount;
+    private boolean processed;
+    
+    protected PaymentProcessor(BigDecimal amount) {
+        this.amount = amount;
+    }
+    
+    public BigDecimal getAmount() {
+        return amount;
+    }
+    
+    public boolean isProcessed() {
+        return processed;
+    }
+    
+    protected void markAsProcessed() {
+        processed = true;
+    }
+    
+    public void showPaymentAmount() {
+        System.out.println("Payment Amount: PHP " + amount);
+    }
+    
+    @Override
+    public void displayPaymentInfo() {
+        System.out.println("Amount: PHP " + amount);
+    }
+    
+    public abstract void processPayment();
 }

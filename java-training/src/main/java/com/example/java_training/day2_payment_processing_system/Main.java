@@ -1,25 +1,35 @@
 package com.example.java_training.day2_payment_processing_system;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 public class Main {
-	public static void main(String[] args) {
-		BigDecimal creditCardAmount = new BigDecimal("100500.64");
-		BigDecimal paypalAmount = new BigDecimal("100.56");
-		BigDecimal bankTransferAmount = new BigDecimal("50000.00");
-	
-		// Polymorphism: Mixing discrete implementations inside an interface array
-		PaymentMethod[] basket = {
-			new CreditCard(creditCardAmount, "TXN0010156563773"),
-			new PayPal(paypalAmount, "gc@gmail.com"),
-			new BankTransfer(bankTransferAmount, "TXN0032567")
-		};
-	
-		for (PaymentMethod payment : basket) {
-			payment.processPayment();
-		}
-		
-		// Managing data using an immutable record
-		TransactionReceipt receipt = new TransactionReceipt("TXN-001", creditCardAmount);
-		System.out.println("Receipt: " + receipt.id() + " | Amount: $" + receipt.amount());
-	}
+    public static void main(String[] args) {
+        PaymentMethod[] basket = {
+                // Valid entries
+                new CreditCard(new BigDecimal("100500.64"), "1234567890123456"),
+                new PayPal(new BigDecimal("100.56"), "gc@gmail.com"),
+                new BankTransfer(new BigDecimal("50000.00"), "1234567890"),
+
+                // Invalid entries -> verification will return false, payment not processed
+                new CreditCard(new BigDecimal("2500.00"), "1234-5678"),
+                new PayPal(new BigDecimal("75.00"), "not-an-email"),
+                new BankTransfer(new BigDecimal("1000.00"), "AB12CD34")
+        };
+
+        System.out.println("--- PAYMENT PROCESSING SYSTEM ---\n");
+
+        for (PaymentMethod payment : basket) {
+            payment.displayPaymentInfo();
+            System.out.println("Verification Result: " + payment.verifyPaymentDetails());
+            payment.processPayment();
+            System.out.println("--------------------------------");
+        }
+
+        TransactionReceipt receipt = new TransactionReceipt("TXN-001", new BigDecimal("100500.64"), LocalDateTime.now());
+        System.out.println("\n--- TRANSACTION RECEIPT ---");
+        System.out.println("Receipt ID: " + receipt.id());
+        System.out.println("Receipt Amount: PHP " + receipt.amount());
+        System.out.println("Timestamp: " + receipt.timestamp());
+    }
 }

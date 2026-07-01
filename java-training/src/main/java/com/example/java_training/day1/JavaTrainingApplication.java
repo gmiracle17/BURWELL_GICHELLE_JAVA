@@ -1,4 +1,4 @@
-package com.example.java_training;
+package com.example.java_training.day1;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
