@@ -1,4 +1,4 @@
-package com.example.java_training.day2_payment_processing_system;
+package com.example.java_training.day3_payment_processing_system;
 import java.math.BigDecimal;
 
 /**
