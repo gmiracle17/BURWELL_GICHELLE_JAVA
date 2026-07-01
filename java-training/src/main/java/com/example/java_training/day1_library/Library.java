@@ -1,4 +1,4 @@
-package com.example.java_training.library;
+package com.example.java_training.day1_library;
 
 import java.util.ArrayList;
 
