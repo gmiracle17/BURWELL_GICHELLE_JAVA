@@ -1,4 +1,4 @@
-package day4;
+package com.ibm.java_training.day4;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Main {
 
@@ -44,7 +45,7 @@ public class Main {
         // Group employees by department using maps
         Map<String, List<Employee>> departmentMap = new HashMap<>();
         
-        for (Employee employee : cleanedEmployeeList) {
+        for (Employee employee : employees) {
             String department = employee.getDepartment();
             
             if (!departmentMap.containsKey(department)) {
@@ -82,7 +83,7 @@ public class Main {
         }
 
         // Sort employees by salary (descending)
-        Collections.sort(cleanedEmployeeList, new Comparator<Employee>() {
+        Collections.sort(employees, new Comparator<Employee>() {
             @Override
             public int compare(Employee e1, Employee e2) {
                 return Double.compare(e2.getSalary(), e1.getSalary());
@@ -91,16 +92,17 @@ public class Main {
         
         System.out.println("\nTop Earning Employees:\n");
         
-        for (Employee employee : cleanedEmployeeList) {
+        for (Employee employee : employees) {
             System.out.println(employee);
         }
 
         // Set of Unique Salaries
-        Set<Double> uniqueSalaries = new HashSet<>();
+        Set<Double> uniqueSalaries = new TreeSet<>(Collections.reverseOrder());
         
-        for (Employee employee : cleanedEmployeeList) {
+        for (Employee employee : employees) {
             uniqueSalaries.add(employee.getSalary());
         }
+        
         System.out.println("\nUnique Salaries:");
         
         for (Double salary : uniqueSalaries) {

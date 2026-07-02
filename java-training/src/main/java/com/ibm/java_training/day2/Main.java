@@ -1,4 +1,4 @@
-package com.example.java_training.day2_library;
+package com.ibm.java_training.day2;
 
 public class Main {
 	public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.example.java_training.day3_payment_processing_system;
+package com.ibm.java_training.day3;
 
 /**
  * PaymentMethod Interface

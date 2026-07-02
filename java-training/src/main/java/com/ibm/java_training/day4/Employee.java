@@ -1,4 +1,4 @@
-package day4;
+package com.ibm.java_training.day4;
 
 public class Employee {
 	String name;
