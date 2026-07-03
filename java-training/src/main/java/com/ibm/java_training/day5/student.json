@@ -1,0 +1,12 @@
+[
+  {
+    "ibm":"ABC123",
+    "name":"Juan Dela Cruz",
+    "course":"Computer Engineering"
+  },
+  {
+    "ibm":"XYZ456",
+    "name":"Maria Santos",
+    "course":"Information Technology"
+  }
+]

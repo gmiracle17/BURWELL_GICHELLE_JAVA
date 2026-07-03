@@ -26,21 +26,13 @@ public class Main {
         employees.add(new Employee("Bob", "IT", 59000)); // duplicate name
 
         // Remove duplicates using hash set
-        Set<String> seenNames = new HashSet<>();
-        List<Employee> cleanedEmployeeList = new ArrayList<>();
+        Set<String> employeeNames = new HashSet<>();
         
+        System.out.println("Unique Employee List:\n");
         for (Employee employee : employees) {
-            if (!seenNames.contains(employee.getName())) {
-                seenNames.add(employee.getName());
-                cleanedEmployeeList.add(employee);
-            }
+            employeeNames.add(employee.getName());
         }
-        
-        System.out.println("Cleaned Employee List:\n");
-        
-        for (Employee employee : cleanedEmployeeList) {
-            System.out.println(employee);
-        }
+        System.out.println(employeeNames.toString());
         
         // Group employees by department using maps
         Map<String, List<Employee>> departmentMap = new HashMap<>();
