@@ -95,8 +95,8 @@ public class LogAnalyzer {
                 bw.write("- " + msg + "\n");
             }
 
-            bw.write("\nEarliest Timestamp: " + earliest + "\n");
-            bw.write("Latest Timestamp: " + latest + "\n");
+            bw.write("\nEarliest Timestamp: " + (earliest == null ? "null" : earliest.format(formatter)) + "\n");
+            bw.write("Latest Timestamp: " + (latest == null ? "null" : latest.format(formatter)) + "\n");
 
         } catch (IOException e) {
             System.out.println("Error writing summary file.");

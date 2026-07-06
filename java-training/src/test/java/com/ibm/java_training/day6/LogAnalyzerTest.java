@@ -6,135 +6,141 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+/**
+ * Unit tests for LogAnalyzer class that reads a server log file,
+ * validates log entries, counts log levels,
+ * extracts error messages, and generates a summary report.
+ * Handles malformed entries and tracks earliest and latest timestamps.
+ */
 public class LogAnalyzerTest {
-
-    private static final String FILE_DIR = "src/main/resources/com/ibm/java_training/day6/";
+    
+	private static final String FILE_DIR = "src/main/resources/com/ibm/java_training/day6/";
+    private static final String TEST_DIR = "src/test/resources/";
+    
     Path summaryFile;
-
+    
+    /**
+     * Removes old summary file before each test.
+     */
     @BeforeEach
     void setup() throws Exception {
         summaryFile = Path.of(FILE_DIR.concat("summary.txt"));
         Files.deleteIfExists(summaryFile);
     }
-
+    
     /**
-     * Testing valid log entries with INFO, WARN, and ERROR levels.
+     * should_ReturnEqual_IfSummaryOutputIsEquivalent
+     * Tests valid log entries with INFO, WARN, and ERROR levels.
      */
     @Test
     void exec001() throws Exception {
-        Path logPath = Path.of(FILE_DIR.concat("exec001/server.log"));
-
+        String expectedFile = Files.readString(Path.of(TEST_DIR.concat("exec001/summary.txt")));
+        Path logPath = Path.of(TEST_DIR.concat("exec001/server.log")); 
+        
         LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
-
-        String content = Files.readString(summaryFile);
-        assertTrue(content.contains("Total Entries: 87"));
-        assertTrue(content.contains("INFO: 68"));
-        assertTrue(content.contains("WARN: 10"));
-        assertTrue(content.contains("ERROR: 9"));
-        assertTrue(content.contains("Failed to connect to external API"));
-        assertTrue(content.contains("NullPointerException in UserService.java line 87"));
-        assertTrue(content.contains("Timeout while reading data from database"));
-        assertTrue(content.contains("FileNotFoundException in ConfigLoader.java line 45"));
-        assertTrue(content.contains("Unauthorized access attempt detected"));
-        assertTrue(content.contains("Assertion failed in TestCase #45"));
-        assertTrue(content.contains("Unable to parse JSON response from API"));
-        assertTrue(content.contains("SMTP server not responding"));
-        assertTrue(content.contains("Audit log write failure"));
-        assertTrue(content.contains("Earliest Timestamp: 2024-05-10T09:00"));
-        assertTrue(content.contains("Latest Timestamp: 2024-05-10T09:04:18"));
+        
+        String actualFile = Files.readString(summaryFile);
+        assertEquals(expectedFile, actualFile);
     }
-
+    
     /**
-     * Testing log entries missing timestamp brackets.
+     * should_SkipMalformedEntries_IfTimestampBracketsAreMissing
+     * Tests log entries missing timestamp brackets.
      */
     @Test
     void exec002() throws Exception {
-        Path logPath = Path.of(FILE_DIR.concat("exec002/server.log"));
-
+        String expectedFile = Files.readString(Path.of(TEST_DIR.concat("exec002/summary.txt")));
+        Path logPath = Path.of(TEST_DIR.concat("exec002/server.log"));
+        
         LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
-
-        String content = Files.readString(summaryFile);
-        assertTrue(content.contains("Total Entries: 2"));
-        assertTrue(content.contains("INFO: 1"));
-        assertTrue(content.contains("WARN: 1"));
-        assertTrue(content.contains("ERROR: 0"));
+        
+        String actualFile = Files.readString(summaryFile);
+        assertEquals(expectedFile, actualFile);
     }
-
+    
     /**
-     * Testing log entries missing message content.
+     * should_SkipMalformedEntries_IfMessageContentIsMissing
+     * Tests log entries missing message content.
      */
     @Test
     void exec003() throws Exception {
-        Path logPath = Path.of(FILE_DIR.concat("exec003/server.log"));
+        String expectedFile = Files.readString(Path.of(TEST_DIR.concat("exec003/summary.txt")));
+        Path logPath = Path.of(TEST_DIR.concat("exec003/server.log"));
 
         LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
+        
+        String actualFile = Files.readString(summaryFile);
 
-        String content = Files.readString(summaryFile);
-        assertTrue(content.contains("Total Entries: 2"));
-        assertTrue(content.contains("INFO: 1"));
-        assertTrue(content.contains("WARN: 1"));
-        assertTrue(content.contains("ERROR: 0"));
+	    String normalizedExpected = expectedFile.replace("\r\n", "\n").strip();
+	    String normalizedActual = actualFile.replace("\r\n", "\n").strip();
+	
+	    assertEquals(normalizedExpected, normalizedActual);
     }
-
+    
     /**
-     * Testing invalid log levels such as DEBUG and TRACE.
+     * should_SkipEntries_IfLogLevelIsInvalid
+     * Tests invalid log levels such as DEBUG and TRACE.
      */
     @Test
     void exec004() throws Exception {
-        Path logPath = Path.of(FILE_DIR.concat("exec004/server.log"));
+        String expectedFile = Files.readString(Path.of(TEST_DIR.concat("exec004/summary.txt")));
+        Path logPath = Path.of(TEST_DIR.concat("exec004/server.log"));
 
         LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
+        
+        String actualFile = Files.readString(summaryFile);
 
-        String content = Files.readString(summaryFile);
-        assertTrue(content.contains("Total Entries: 2"));
-        assertTrue(content.contains("INFO: 0"));
-        assertTrue(content.contains("WARN: 1"));
-        assertTrue(content.contains("ERROR: 1"));
-        assertTrue(content.contains("Failed to connect to external API"));
+	    String normalizedExpected = expectedFile.replace("\r\n", "\n").strip();
+	    String normalizedActual = actualFile.replace("\r\n", "\n").strip();
+	
+	    assertEquals(normalizedExpected, normalizedActual);
     }
-
+    
     /**
-     * Testing malformed timestamps with invalid date formats.
+     * should_ThrowDateTimeParseException_IfTimestampFormatIsInvalid
+     * Tests malformed timestamps with invalid date formats.
      */
     @Test
     void exec005() {
-        Path logPath = Path.of(FILE_DIR.concat("exec005/server.log"));
-
-        org.junit.jupiter.api.Assertions.assertThrows(java.time.format.DateTimeParseException.class,
+        Path logPath = Path.of(TEST_DIR.concat("exec005/server.log"));
+        assertThrows(java.time.format.DateTimeParseException.class,
                 () -> LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() })
         );
     }
-
+    
     /**
-     * Testing empty log files with zero entries.
+     * should_ReturnEmptySummary_IfLogFileIsEmpty
+     * Tests empty log files with zero entries.
      */
     @Test
     void exec006() throws Exception {
-        Path logPath = Path.of(FILE_DIR.concat("exec006/server.log"));
+        String expectedFile = Files.readString(Path.of(TEST_DIR.concat("exec006/summary.txt")));
+        Path logPath = Path.of(TEST_DIR.concat("exec006/server.log"));
 
         LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
+        
+        String actualFile = Files.readString(summaryFile);
 
-        String content = Files.readString(summaryFile);
-        assertTrue(content.contains("Total Entries: 0"));
-        assertTrue(content.contains("INFO: 0"));
-        assertTrue(content.contains("WARN: 0"));
-        assertTrue(content.contains("ERROR: 0"));
-        assertTrue(content.contains("Earliest Timestamp: null"));
-        assertTrue(content.contains("Latest Timestamp: null"));
+	    String normalizedExpected = expectedFile.replace("\r\n", "\n").strip();
+	    String normalizedActual = actualFile.replace("\r\n", "\n").strip();
+	
+	    assertEquals(normalizedExpected, normalizedActual);
     }
-
+    
     /**
-     * Testing when log file does not exist.
+     * should_NotCreateSummaryFile_IfLogFileDoesNotExist
+     * Tests behavior when input log file does not exist.
      */
     @Test
     void exec007() {
-        Path logPath = Path.of(FILE_DIR.concat("exec007/server.log"));
-
+        Path logPath = Path.of(TEST_DIR.concat("exec007/server.log"));
+        
         LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
-
+        
         assertFalse(Files.exists(summaryFile));
     }
 }

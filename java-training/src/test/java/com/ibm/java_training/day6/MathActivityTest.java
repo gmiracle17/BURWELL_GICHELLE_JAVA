@@ -71,8 +71,7 @@ public class MathActivityTest {
     }
 
     /**
-     * Testing divide() method throws ArithmeticException
-     * when dividing by zero.
+     * Testing divide() method throws ArithmeticException when dividing by zero.
      */
     @Test
     void exec05() {
