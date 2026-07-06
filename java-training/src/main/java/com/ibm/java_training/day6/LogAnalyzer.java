@@ -15,7 +15,7 @@ public class LogAnalyzer {
 
     public static void main(String[] args) {
         //String filename = "resources/server.log";
-    	String filename = (args.length > 0) ? args[0] : "src/main/resources/server.log";
+    	String filename = (args.length > 0) ? args[0] : "src/main/resources/com/ibm/java_training/day6/server.log";
         Map<String, Integer> levelCount = new HashMap<>();
         levelCount.put("INFO", 0);
         levelCount.put("WARN", 0);
@@ -81,7 +81,7 @@ public class LogAnalyzer {
         }
 
         // Write summary
-        String outputFile = (args.length > 1) ? args[1] : "src/main/resources/summary.txt";
+        String outputFile = (args.length > 1) ? args[1] : "src/main/resources/com/ibm/java_training/day6/summary.txt";
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
             bw.write("Log Summary Report\n");
             bw.write("------------------\n");

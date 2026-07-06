@@ -2,123 +2,139 @@ package com.ibm.java_training.day6;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class LogAnalyzerTest {
-	
-    @TempDir
-    Path tempDir;
+
+    private static final String FILE_DIR = "src/main/resources/com/ibm/java_training/day6/";
     Path summaryFile;
-    
-    /**
-     * Creates summary file path before each test.
-     */
+
     @BeforeEach
-    void setup() {
-        summaryFile = tempDir.resolve("summary.txt");
+    void setup() throws Exception {
+        summaryFile = Path.of(FILE_DIR.concat("summary.txt"));
+        Files.deleteIfExists(summaryFile);
     }
-    
+
     /**
      * Testing valid log entries with INFO, WARN, and ERROR levels.
      */
     @Test
     void exec001() throws Exception {
-        Path logFile = tempDir.resolve("server.log");
-        Files.writeString(logFile,
-                "[2024-05-10 10:00:00] INFO: Server started\n" +
-                "[2024-05-10 10:05:00] WARN: High memory usage\n" +
-                "[2024-05-10 10:10:00] ERROR: Database connection failed\n" +
-                "[2024-05-10 10:15:00] INFO: Request processed\n"
-        );
-        LogAnalyzer.main(new String[]{ logFile.toString(), summaryFile.toString() });
+        Path logPath = Path.of(FILE_DIR.concat("exec001/server.log"));
+
+        LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
+
         String content = Files.readString(summaryFile);
-        assertTrue(content.contains("Total Entries: 4"));
-        assertTrue(content.contains("INFO: 2"));
-        assertTrue(content.contains("WARN: 1"));
-        assertTrue(content.contains("ERROR: 1"));
-        assertTrue(content.contains("Database connection failed"));
+        assertTrue(content.contains("Total Entries: 87"));
+        assertTrue(content.contains("INFO: 68"));
+        assertTrue(content.contains("WARN: 10"));
+        assertTrue(content.contains("ERROR: 9"));
+        assertTrue(content.contains("Failed to connect to external API"));
+        assertTrue(content.contains("NullPointerException in UserService.java line 87"));
+        assertTrue(content.contains("Timeout while reading data from database"));
+        assertTrue(content.contains("FileNotFoundException in ConfigLoader.java line 45"));
+        assertTrue(content.contains("Unauthorized access attempt detected"));
+        assertTrue(content.contains("Assertion failed in TestCase #45"));
+        assertTrue(content.contains("Unable to parse JSON response from API"));
+        assertTrue(content.contains("SMTP server not responding"));
+        assertTrue(content.contains("Audit log write failure"));
+        assertTrue(content.contains("Earliest Timestamp: 2024-05-10T09:00"));
+        assertTrue(content.contains("Latest Timestamp: 2024-05-10T09:04:18"));
     }
-    
+
     /**
      * Testing log entries missing timestamp brackets.
      */
     @Test
     void exec002() throws Exception {
-        Path logFile = tempDir.resolve("missing_brackets.log");
-        Files.writeString(logFile,
-                "2024-05-10 10:00:00 INFO: Missing brackets\n" +
-                "[2024-05-10 10:05:00] INFO: Valid entry\n"
-        );
-        LogAnalyzer.main(new String[]{ logFile.toString(), summaryFile.toString() });
+        Path logPath = Path.of(FILE_DIR.concat("exec002/server.log"));
+
+        LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
+
         String content = Files.readString(summaryFile);
-        assertTrue(content.contains("Total Entries: 1"));
+        assertTrue(content.contains("Total Entries: 2"));
         assertTrue(content.contains("INFO: 1"));
+        assertTrue(content.contains("WARN: 1"));
+        assertTrue(content.contains("ERROR: 0"));
     }
-    
+
     /**
      * Testing log entries missing message content.
      */
     @Test
     void exec003() throws Exception {
-        Path logFile = tempDir.resolve("missing_message.log");
-        Files.writeString(logFile,
-                "[2024-05-10 10:00:00] INFO\n" +
-                "[2024-05-10 10:05:00] ERROR: Disk failure\n"
-        );
-        LogAnalyzer.main(new String[]{ logFile.toString(),  summaryFile.toString() });
+        Path logPath = Path.of(FILE_DIR.concat("exec003/server.log"));
+
+        LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
+
         String content = Files.readString(summaryFile);
-        assertTrue(content.contains("Total Entries: 1"));
-        assertTrue(content.contains("INFO: 0"));
-        assertTrue(content.contains("ERROR: 1"));
+        assertTrue(content.contains("Total Entries: 2"));
+        assertTrue(content.contains("INFO: 1"));
+        assertTrue(content.contains("WARN: 1"));
+        assertTrue(content.contains("ERROR: 0"));
     }
-    
+
     /**
      * Testing invalid log levels such as DEBUG and TRACE.
      */
     @Test
     void exec004() throws Exception {
-        Path logFile = tempDir.resolve("invalid_level.log");
-        Files.writeString(logFile,
-                "[2024-05-10 10:00:00] DEBUG: Debugging info\n" +
-                "[2024-05-10 10:05:00] TRACE: Trace information\n" +
-                "[2024-05-10 10:10:00] ERROR: Actual error\n"
-        );
-        LogAnalyzer.main(new String[]{ logFile.toString(), summaryFile.toString() });
+        Path logPath = Path.of(FILE_DIR.concat("exec004/server.log"));
+
+        LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
+
         String content = Files.readString(summaryFile);
-        assertTrue(content.contains("Total Entries: 1"));
+        assertTrue(content.contains("Total Entries: 2"));
+        assertTrue(content.contains("INFO: 0"));
+        assertTrue(content.contains("WARN: 1"));
         assertTrue(content.contains("ERROR: 1"));
+        assertTrue(content.contains("Failed to connect to external API"));
     }
-    
+
     /**
      * Testing malformed timestamps with invalid date formats.
      */
     @Test
-    void exec005() throws Exception {
-        Path logFile = tempDir.resolve("bad_timestamp.log");
-        Files.writeString(logFile,
-                "[10-05-2024 10:00:00] INFO: Wrong timestamp\n"
+    void exec005() {
+        Path logPath = Path.of(FILE_DIR.concat("exec005/server.log"));
+
+        org.junit.jupiter.api.Assertions.assertThrows(java.time.format.DateTimeParseException.class,
+                () -> LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() })
         );
-        try {
-        	LogAnalyzer.main(new String[]{ logFile.toString(), summaryFile.toString() });
-        } catch (Exception ignored) {}
     }
-    
+
     /**
      * Testing empty log files with zero entries.
      */
     @Test
     void exec006() throws Exception {
-        Path logFile = tempDir.resolve("empty.log");
-        Files.writeString(logFile, "");
-        LogAnalyzer.main(new String[]{ logFile.toString(), summaryFile.toString() });
+        Path logPath = Path.of(FILE_DIR.concat("exec006/server.log"));
+
+        LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
+
         String content = Files.readString(summaryFile);
         assertTrue(content.contains("Total Entries: 0"));
         assertTrue(content.contains("INFO: 0"));
         assertTrue(content.contains("WARN: 0"));
         assertTrue(content.contains("ERROR: 0"));
+        assertTrue(content.contains("Earliest Timestamp: null"));
+        assertTrue(content.contains("Latest Timestamp: null"));
+    }
+
+    /**
+     * Testing when log file does not exist.
+     */
+    @Test
+    void exec007() {
+        Path logPath = Path.of(FILE_DIR.concat("exec007/server.log"));
+
+        LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
+
+        assertFalse(Files.exists(summaryFile));
     }
 }
