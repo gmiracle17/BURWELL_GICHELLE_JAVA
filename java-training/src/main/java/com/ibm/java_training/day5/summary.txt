@@ -3,7 +3,6 @@ Total Entries: 87
 INFO: 68
 WARN: 10
 ERROR: 9
-ERROR: 9
 
 Error Messages:
 - Failed to connect to external API
