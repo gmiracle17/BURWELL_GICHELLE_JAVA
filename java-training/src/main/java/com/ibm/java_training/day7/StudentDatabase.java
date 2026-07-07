@@ -19,6 +19,31 @@ public class StudentDatabase {
     private static final String USER = "postgres";
     private static final String PASSWORD = "postgres";
 
+    private static final String emailExistsQuery = "SELECT 1 FROM student WHERE email = ?";
+
+    private static final String addStudentQuery = """
+            INSERT INTO student
+            (email, password, firstname, lastname, dateadded, dateupdated)
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            RETURNING studentid
+            """;
+
+    private static final String searchStudentsQuery = """
+            SELECT studentid, email, firstname, lastname, dateadded, dateupdated 
+            FROM student 
+            WHERE email ILIKE ? OR firstname ILIKE ? OR lastname ILIKE ?
+            """;
+
+    private static final String viewAllStudentsQuery =
+            "SELECT studentid, email, firstname, lastname, dateadded, dateupdated FROM student";
+
+    private static final String verifyPasswordQuery = "SELECT password FROM student WHERE studentid = ?";
+
+    private static final String updatePasswordQuery =
+            "UPDATE student SET password = ?, dateupdated = CURRENT_TIMESTAMP WHERE studentid = ?";
+
+    private static final String deleteStudentQuery = "DELETE FROM student WHERE studentid = ?";
+
     public static Connection getConnection() throws SQLException { return DriverManager.getConnection(JDBC_URL, USER, PASSWORD); }
     public record StudentRecord(int studentId, String email, String firstName, String lastName, Timestamp dateAdded, Timestamp dateUpdated) {}
     
@@ -29,10 +54,9 @@ public class StudentDatabase {
      * @return true if the email exists, false otherwise.
      */
     public static boolean emailExists(String email) {
-        String sql = "SELECT 1 FROM student WHERE email = ?";
         try (
                 Connection connection = getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)
+                PreparedStatement ps = connection.prepareStatement(emailExistsQuery)
         ) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) { return rs.next(); }
@@ -51,15 +75,9 @@ public class StudentDatabase {
      * @param lastName	The student's last name.
      */
     public static void addStudent(String email, String password, String firstName, String lastName) {
-        String sql = """
-                INSERT INTO student
-                (email, password, firstname, lastname, dateadded, dateupdated)
-                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-                RETURNING studentid
-                """;
         try (
                 Connection connection = getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)
+                PreparedStatement ps = connection.prepareStatement(addStudentQuery)
         ) {
             ps.setString(1, email);
             ps.setString(2, password);
@@ -83,15 +101,10 @@ public class StudentDatabase {
      * @return A list of matching student records.
      */
     public static List<StudentRecord> searchStudents(String term) {
-        String sql = """
-                SELECT studentid, email, firstname, lastname, dateadded, dateupdated 
-                FROM student 
-                WHERE email ILIKE ? OR firstname ILIKE ? OR lastname ILIKE ?
-                """;
         List<StudentRecord> rawResults = new ArrayList<>();
         try (
                 Connection connection = getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)
+                PreparedStatement ps = connection.prepareStatement(searchStudentsQuery)
         ) {
             String likeTerm = "%" + term + "%";
             ps.setString(1, likeTerm);
@@ -120,12 +133,11 @@ public class StudentDatabase {
      * Retrieves and prints details for all registered students.
      */
     public static void viewAllStudents() {
-        String sql = "SELECT studentid, email, firstname, lastname, dateadded, dateupdated FROM student";
         List<StudentRecord> students = new ArrayList<>();
         
         try (
                 Connection connection = getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql);
+                PreparedStatement ps = connection.prepareStatement(viewAllStudentsQuery);
                 ResultSet rs = ps.executeQuery()
         ) {
             while (rs.next()) {
@@ -163,10 +175,9 @@ public class StudentDatabase {
      * @return true if credentials match, false otherwise.
      */
     public static boolean verifyPassword(int studentId, String password) {
-        String sql = "SELECT password FROM student WHERE studentid = ?";
         try (
                 Connection connection = getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)
+                PreparedStatement ps = connection.prepareStatement(verifyPasswordQuery)
         ) {
             ps.setInt(1, studentId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -185,10 +196,9 @@ public class StudentDatabase {
      * @param newPassword	The new password to save.
      */
     public static void updatePassword(int studentId, String newPassword) {
-        String sql = "UPDATE student SET password = ?, dateupdated = CURRENT_TIMESTAMP WHERE studentid = ?";
         try (
                 Connection connection = getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)
+                PreparedStatement ps = connection.prepareStatement(updatePasswordQuery)
         ) {
             ps.setString(1, newPassword);
             ps.setInt(2, studentId);
@@ -207,10 +217,9 @@ public class StudentDatabase {
      * @param studentId	The ID of the student to delete.
      */
     public static void deleteStudent(int studentId) {
-        String sql = "DELETE FROM student WHERE studentid = ?";
         try (
                 Connection connection = getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)
+                PreparedStatement ps = connection.prepareStatement(deleteStudentQuery)
         ) {
             ps.setInt(1, studentId);
             int rows = ps.executeUpdate();
@@ -330,7 +339,7 @@ public class StudentDatabase {
         }
         System.out.println("\nMatching students:");
         matches.stream().forEach(student -> 
-            System.out.println("[" + student.studentId() + "] " + student.firstName() + " " + s.lastName() + " - " + s.email())
+            System.out.println("[" + student.studentId() + "] " + student.firstName() + " " + student.lastName() + " - " + student.email())
         );
         
         int chosenId = verifyStudentIDChoice(scanner, "Enter Student ID to view: ", matches);
