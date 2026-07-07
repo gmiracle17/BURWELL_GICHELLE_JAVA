@@ -7,7 +7,7 @@ public class MathActivity {
     public static float subtract(float a, float b) {
         return a - b;
     }
-    public static float multiple(float a, float b) {
+    public static float multiply(float a, float b) {
         return a * b;
     }
     public static float divide(float a, float b) {

@@ -48,10 +48,10 @@ public class MathActivityTest {
      */
     @Test
     void exec03() {
-        assertEquals(20.72f, MathActivity.multiple(greaterPositiveFloat, lesserPositiveFloat), 0.001f);
-        assertEquals(20.72f, MathActivity.multiple(greaterNegativeFloat, lesserNegativeFloat), 0.001f);
-        assertEquals(-20.72f, MathActivity.multiple(greaterNegativeFloat, lesserPositiveFloat), 0.001f);
-        assertEquals(-20.72f, MathActivity.multiple(greaterPositiveFloat, lesserNegativeFloat), 0.001f);
+        assertEquals(20.72f, MathActivity.multiply(greaterPositiveFloat, lesserPositiveFloat), 0.001f);
+        assertEquals(20.72f, MathActivity.multiply(greaterNegativeFloat, lesserNegativeFloat), 0.001f);
+        assertEquals(-20.72f, MathActivity.multiply(greaterNegativeFloat, lesserPositiveFloat), 0.001f);
+        assertEquals(-20.72f, MathActivity.multiply(greaterPositiveFloat, lesserNegativeFloat), 0.001f);
     }
 
     /**
@@ -69,15 +69,38 @@ public class MathActivityTest {
         assertEquals(-0.6607f, MathActivity.divide(lesserPositiveFloat, greaterNegativeFloat), 0.001f);
         assertEquals(-0.6607f, MathActivity.divide(lesserNegativeFloat, greaterPositiveFloat), 0.001f);
     }
-
+    
+    /**
+     * Testing add(), subtract(), multiply(), and divide() with 0
+     */
+    @Test
+    void exec05() {
+    	assertEquals(5.6f, MathActivity.add(0f, greaterPositiveFloat), 0.001f);
+    	assertEquals(-5.6f, MathActivity.add(0f, greaterNegativeFloat), 0.001f);
+    	assertEquals(5.6f, MathActivity.add(greaterPositiveFloat, 0f), 0.001f);
+    	assertEquals(-5.6f, MathActivity.add(greaterNegativeFloat, 0f), 0.001f);
+    	
+    	assertEquals(-5.6f, MathActivity.subtract(0f, greaterPositiveFloat), 0.001f);
+    	assertEquals(5.6f, MathActivity.subtract(0f, greaterNegativeFloat), 0.001f);
+    	assertEquals(5.6f, MathActivity.subtract(greaterPositiveFloat, 0f), 0.001f);
+    	assertEquals(-5.6f, MathActivity.subtract(greaterNegativeFloat, 0f), 0.001f);
+    	
+    	assertEquals(0f, MathActivity.multiply(0f, greaterPositiveFloat), 0.001f);
+    	assertEquals(0f, MathActivity.multiply(0f, greaterNegativeFloat), 0.001f);
+    	assertEquals(0f, MathActivity.multiply(greaterPositiveFloat, 0f), 0.001f);
+    	assertEquals(0f, MathActivity.multiply(greaterNegativeFloat, 0f), 0.001f);
+    	
+    	assertEquals(0f, MathActivity.multiply(0f, greaterPositiveFloat), 0.001f);
+    	assertEquals(0f, MathActivity.multiply(0f, greaterNegativeFloat), 0.001f);
+    }
     /**
      * Testing divide() method throws ArithmeticException when dividing by zero.
      */
     @Test
-    void exec05() {
+    void exec06() {
         assertThrows(
                 ArithmeticException.class,
-                () -> MathActivity.divide(5.0f, 0.0f)
+                () -> MathActivity.divide(greaterPositiveFloat, 0.0f)
         );
     }
 }
