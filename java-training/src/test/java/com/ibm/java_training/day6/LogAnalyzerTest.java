@@ -3,15 +3,19 @@ package com.ibm.java_training.day6;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Assumptions;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
 /**
@@ -173,6 +177,38 @@ public class LogAnalyzerTest {
             assertTrue(consoleOutput.contains("Error writing summary file."));
         } finally {
             System.setOut(originalOut);
+        }
+    }
+    
+    /**
+     * should_PrintErrorReadingFile_WhenLogFileHasNoReadPermission
+	 *
+	 * Tests the behavior when the input log file cannot be read due to
+	 * missing file permissions.
+	 * 
+     * @throws IOException
+     */
+    @Test
+    void exec009() throws IOException {
+        Assumptions.assumeTrue(FileSystems.getDefault().supportedFileAttributeViews().contains("posix"));
+        
+        Path logPath = Path.of(TEST_DIR.concat("exec001/server.log"));
+        
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
+        
+        try {
+            Files.setPosixFilePermissions(logPath, Collections.emptySet());
+            LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
+            String expected = "Error reading file." + System.lineSeparator();
+            assertEquals(expected, outContent.toString());
+        } finally {
+            System.setOut(originalOut);
+            Files.setPosixFilePermissions(
+                    logPath,
+                    java.nio.file.attribute.PosixFilePermissions
+                            .fromString("rw-r--r--"));
         }
     }
 }
