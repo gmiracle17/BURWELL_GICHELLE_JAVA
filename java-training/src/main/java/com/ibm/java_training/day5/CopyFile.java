@@ -10,7 +10,7 @@ public class CopyFile {
 	
     public static void main(String[] args) {
     	
-        String path = "src/main/java/com/ibm/java_training/day5/";
+        String path = "src/main/resources/com/ibm/java_training/day5/";
         List<Student> students = new ArrayList<>();
         
         try (

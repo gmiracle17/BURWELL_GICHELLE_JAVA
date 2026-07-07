@@ -14,7 +14,7 @@ class MalformedLogEntryException extends Exception {
 // Record for storing log data
 record LogEntry(LocalDateTime timestamp, String level, String message) {}
 
-public class LogAnalyzer {
+public class LogFileAnalyzer {
     
 	public static void validateLine(String line) throws MalformedLogEntryException {
 		// Empty line
@@ -35,7 +35,7 @@ public class LogAnalyzer {
 	
 	public static void main(String[] args) {
         
-		String path = "src/main/resources/com/ibm/java_training/day6/";
+		String path = "src/main/resources/com/ibm/java_training/day5/";
         
 		// Count log levels
         Map<String, Integer> logCounts = new HashMap<>();

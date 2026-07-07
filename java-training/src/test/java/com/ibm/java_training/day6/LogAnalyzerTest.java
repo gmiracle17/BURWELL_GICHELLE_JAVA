@@ -7,8 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 /**
  * Unit tests for LogAnalyzer class that reads a server log file,
@@ -142,5 +146,33 @@ public class LogAnalyzerTest {
         LogAnalyzer.main(new String[]{ logPath.toString(), summaryFile.toString() });
         
         assertFalse(Files.exists(summaryFile));
+    }
+    
+    /**
+     * should_PrintErrorWritingFile_WhenOutputPathIsDirectory
+     *
+     * Tests behavior when output path is invalid
+     * Must print "Error writing summary file."
+     *
+     * @throws Exception
+     */
+    @Test
+    void exec008() throws Exception {
+        Path logPath = Path.of(TEST_DIR.concat("exec001/server.log"));
+        
+        Path invalidOutputPath = Path.of(FILE_DIR);
+        
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
+        
+        try {
+            LogAnalyzer.main(new String[]{ logPath.toString(), invalidOutputPath.toString() });
+            
+            String consoleOutput = outContent.toString();
+            assertTrue(consoleOutput.contains("Error writing summary file."));
+        } finally {
+            System.setOut(originalOut);
+        }
     }
 }
